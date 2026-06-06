@@ -6,13 +6,14 @@ import numpy as np
 
 app = FastAPI()
 
-# Let FastAPI handle the layer middleware purely
+# Let FastAPI handle all CORS configurations and OPTIONS handshakes cleanly
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization"],
+    allow_headers=["Content-Type", "Authorization", "Accept"],
+    expose_headers=["Access-Control-Allow-Origin"],
 )
 
 TELEMETRY_DATA = [
