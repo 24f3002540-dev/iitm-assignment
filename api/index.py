@@ -6,16 +6,16 @@ import numpy as np
 
 app = FastAPI()
 
-# Pristine middleware config
+# Enable CORS for POST requests from any origin as strictly required by the prompt
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization", "Accept"],
+    allow_headers=["*"],
 )
 
-# YOUR ACTUAL FILE DATASET ADDED DIRECTLY HERE
+# Entire dataset embedded natively since serverless environments restrict file system reads
 TELEMETRY_DATA = [
   {"region": "apac", "service": "catalog", "latency_ms": 218.08, "uptime_pct": 97.823, "timestamp": 20250301},
   {"region": "apac", "service": "payments", "latency_ms": 222.07, "uptime_pct": 99.171, "timestamp": 20250302},
@@ -75,7 +75,8 @@ def calculate_metrics(request: AnalyticsRequest):
             continue
             
         latencies = [r["latency_ms"] for r in region_records]
-        uptimes = [r["uptime_pct"] / 100.0 for r in region_records] # Converts 98.5% -> 0.9850 average metric standard
+        # Converts 98.5% percentage out of 100 to decimal uptime ratio format (e.g. 0.9850)
+        uptimes = [r["uptime_pct"] / 100.0 for r in region_records] 
         
         response_data[region] = {
             "avg_latency": round(float(np.mean(latencies)), 2),
